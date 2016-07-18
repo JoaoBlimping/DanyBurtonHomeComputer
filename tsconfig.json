@@ -1,0 +1,13 @@
+{
+    "compilerOptions":
+    {
+      "removeComments": true,
+      "preserveConstEnums": true,
+      "outFile": "release/computer.js",
+      "sourceMap": true
+    },
+    "exclude":
+    [
+        "release"
+    ]
+}
