@@ -28,11 +28,11 @@ SET instructions start with a 0, and there are then 5 different types of them:
 - 01 instructions write the value in the A register to the contained hard drive address. (so the hard drive can only contain 2^14 words. Although this could be expanded through some kind of memory mapped thingo).
 
 D instructions start with a 1, and then they pretty much follow the same formula:
-11ccccccdddjjjl
+1ccccccddddjjjl
 c are the computation bits which represent the computation to be performed.
-the d bits determine where the value will be stored, allowing any combination of A register, D register, and memory[A].
+the d bits determine where the value will be stored, allowing any combination of A register, D register, memory[A + offset], and memory[A]
 the j bits say under what conditions the program jumps to the memory location contained in the A register, with the conditions being if the computed value is less than 0, 0, or greater than 0.
-the l bit says whether or not to offset the jump by the O register. that way you can do system calls and stuff.
+the l bit says whether or not to offset the jump by the O register.
 
 ## Memory Mapped IO
 The Dany Burton Home Computer will have the following IO devices:
