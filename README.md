@@ -3,6 +3,7 @@ A Javascript virtual machine that I can put in my website.
 It's IO will consist of mouse, screen, keyboard, saving data to the user's computer which will be treated like a hard drive, and also character data can be posted to the page which will be mapped to memory too.
 
 In order to not force the VM to constantly check for writes to the hard drive, I think I will add a special write to hard drive instruction or something.
+yeah and also a write one. the hard drive will save whole blocks at a time, and will be capable of storing 2^13 of them
 
 
 ## registers
@@ -25,7 +26,8 @@ SET instructions start with a 0, and there are then 5 different types of them:
 - 00000011 instructions set the value of the O register
 - 00001aco push register denoted by bits to stack. only one register per instruction allowed
 - 00011aco pop register denoted by bits to stack. only one register per instruction allowed
-- 01 instructions write the value in the A register to the contained hard drive address. (so the hard drive can only contain 2^14 words. Although this could be expanded through some kind of memory mapped thingo).
+- 010 instructions write the block currently pointed to by the O register to the block in the hard drive pointed to by the following bits
+- 011 instructions read the block denoted by the following bits into the block pointed to by the O register.
 
 D instructions start with a 1, and then they pretty much follow the same formula:
 1ccccccddddjjjl
