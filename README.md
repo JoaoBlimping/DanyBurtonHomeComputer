@@ -1,51 +1,43 @@
-# DanyBurtonHomeComputer
-A Javascript virtual machine that I can put in my website.
-It's IO will consist of mouse, screen, keyboard, saving data to the user's computer which will be treated like a hard drive, and also character data can be posted to the page which will be mapped to memory too.
+# Dany Burton Home Computer
+A 16-bit virtual machine for messing around with, which I would like to eventually have periferals
+that work with internet stuff after porting it to the web. It will also have 512x256 8-bit screen
+and keyboard and mouse support. Maybe also make the colour palette programmable. All the IO stuff
+will be memory mapped. The amount of memory mappable is 2^23, since there is an 8 bit offset
+register, and then 16 bit mapping at every offset. There are 16 registers, 13 of which are general
+purpose, with r[13] being the offset register, r[14] being the program counter, and r[15] being the
+maths flags one.
 
-In order to not force the VM to constantly check for writes to the hard drive, I think I will add a special write to hard drive instruction or something.
-yeah and also a write one. the hard drive will save whole blocks at a time, and will be capable of storing 2^13 of them
-
-
-## registers
-A register is used to address memory and has to either be set through a calculation or a two instruction setting process.
-C register is used to store the output of calculations and stuff.
-O register stores the memory offset of the currently running program so that it's jumps still work. it is only 8 bits wide,
-and so every offset is a multiple of 256 words.
-S register is a stack that you can put stuff on if you so desire. It's main purpose is so you can put your A and O
-registers on it before jumping to system calls so it knows where to send you back to.
-
-
-## Instructions
-The instruction set will mostly be a rip off of the machine from Nand2Tetris. People are allowed to do that with
-processors, so I think I'm ok doing that here.
-
-Ok so there are two types of instructions:
-SET instructions start with a 0, and there are then 5 different types of them:
-- 00000000 instructions set the first byte of the value to store in the A register
-- 00000001 instructions set the second byte of the value in the A register
-- 00000011 instructions set the value of the O register
-- 00001aco push register denoted by bits to stack. only one register per instruction allowed
-- 00011aco pop register denoted by bits to stack. only one register per instruction allowed
-- 010 instructions write the block currently pointed to by the O register to the block in the hard drive pointed to by the following bits
-- 011 instructions read the block denoted by the following bits into the block pointed to by the O register.
-
-D instructions start with a 1, and then they pretty much follow the same formula:
-1ccccccddddjjjl
-c are the computation bits which represent the computation to be performed.
-the d bits determine where the value will be stored, allowing any combination of A register, D register, memory[A + offset], and memory[A]
-the j bits say under what conditions the program jumps to the memory location contained in the A register, with the conditions being if the computed value is less than 0, 0, or greater than 0.
-the l bit says whether or not to offset the jump by the O register.
-
-## Memory Mapped IO
-The Dany Burton Home Computer will have the following IO devices:
-- 160 x 96 8 bit colour screen. occupying the last 30 256 word blocks in memory.
-- one block of data posted to the page.
-- one block containing a stack of keyboard events.
-- one block where the first word is current mouse movement, and then the rest is a stack of mouse click events.
+# Instructions
+ - ADD a b c   - 0000aaaabbbbcccc - r[c] = r[a] + r[b]
+ - DIV a b c   - 0001aaaabbbbcccc - r[c] = r[a] / r[b]
+ - MOD a b c   - 0010aaaabbbbcccc - r[c] = r[a] mod r[b]
+ - MEMCPY a b  - 0100aaaabbbb1000 - m[r[a]] = r[b]
+ - MEMSUC a b  - 0100aaaabbbb0100 - r[a] = m[r[b]]
+ - MEMSWAP a b - 0100aaaabbbb1100 - m[r[a]] = r[b] and r[a] = m[r[b]]
+ - MOV a b     - 1000aaaabbbbbbbb - r[a] = b
+ - CPY a b     - 1111aaaabbbb0000 - r[a] = r[b]
+ - CPYL a b    - 1100aaaabbbbcccc - r[a] = r[b] if r[c] is less than 0
+ - CPYLE a b   - 1110aaaabbbbcccc - r[a] = r[c] if r[c] is less than or equal to 0
+ - CPYE a b    - 1010aaaabbbbcccc - r[a] = r[c] if r[c] is equal to 0
+ - CPYGE a b   - 1011aaaabbbbcccc - r[a] = r[c] if r[c] is greater than or equal to 0
+ - CPYG a b    - 1001aaaabbbbcccc - r[a] = r[c] if r[c] is greater than 0
 
 
-## Startup
-first a bootloader type thing will run which first checks if the user has a hard drive file, and if they don't it will
-send them the latest disk image I have made.
-Then it loads the first 256 words from the hard drive into the start of memory and then the computer begins to execute
-normally.
+
+
+int total = 0;
+for (int i = 1;i < 10;i++) total += i;
+
+
+#define TOTAL 0
+#define I 1
+#define ONE 2
+#define PROGRAM_COUNTER 14
+
+MOV TOTAL 0
+MOV I 0
+MOV ONE 1
+loop:
+  ADD I ONE I
+  ADD TOTAL I TOTAL
+  MOV PROGRAM_COUNTER loop
